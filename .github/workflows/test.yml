@@ -3,25 +3,28 @@ name: CI
 on:
   push:
   pull_request:
-  workflow_dispatch:
 
 jobs:
   test:
-    name: Foundry project
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v3
 
       - name: Install Foundry
-        uses: foundry-rs/foundry-toolchain@v1
+        run: |
+          curl -L https://foundry.paradigm.xyz | bash
+          ~/.foundry/bin/foundryup
 
-      - name: Show Forge version
+      - name: Add Foundry to PATH
+        run: echo "$HOME/.foundry/bin" >> $GITHUB_PATH
+
+      - name: Check forge
         run: forge --version
 
-      - name: Build project
+      - name: Build
         run: forge build
 
-      - name: Run tests
+      - name: Test
         run: forge test -vvv
